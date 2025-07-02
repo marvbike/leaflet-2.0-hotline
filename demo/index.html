@@ -1,154 +1,230 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Leaflet 2.0.0 Hotline Example</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@2.0.0-alpha/dist/leaflet.css" />
 	<script src="js/coords.js"></script>
-	<script src="../dist/leaflet.hotline.js"></script>
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
 	<style>
+		body {
+			font-family: sans-serif;
+			line-height: 1.5;
+		}
+
 		header,
 		section {
-			max-width: 600px;
+			max-width: 800px;
 			margin: 1.5em auto;
 			text-align: center;
 		}
+
 		aside {
 			margin: 1.5em 0;
 		}
+
 		label {
 			display: inline-block;
 			padding: 0.5em;
 		}
+
 		input {
 			vertical-align: text-bottom;
 		}
+
 		h1 a {
 			text-decoration: none;
 			color: inherit;
 			font-weight: normal;
 		}
+
 		h1 img {
 			vertical-align: text-bottom;
 		}
-		#map {
-			width: 100%;
+
+		#map,
+		#svgmap {
+			width: 300px; 
 			height: 300px;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		}
+
 		.muted {
 			color: #666;
 			font-size: 0.8em;
 		}
+
+		.container {
+			display: flex;
+		}
+
+		.item {
+			flex: 1;
+		}
 	</style>
 </head>
+
 <body>
+
 	<header>
 		<h1>
-			<a href="https://github.com/iosphere/Leaflet.hotline/">Leaflet.<img src="img/hotline.png" alt="hotline" height="50"/></a>
+			<a href="https://github.com/marvbike/leaflet-2.0-hotline">leaflet-2.hotline</a>
 		</h1>
-		<p>A Leaflet plugin for drawing gradients along polylines. <br>
-		Inspired by <a href="https://github.com/Leaflet/Leaflet.heat">Leaflet.heat</a>.</p>
-		<p>Documentation is at <a href="https://github.com/iosphere/Leaflet.hotline/">iosphere/Leaflet.hotline</a>.</p>
+		<p>A Leaflet 2.0.0-alpha plugin for drawing gradients along polylines. Inspired and updated from <a
+				href="https://github.com/iosphere/Leaflet.hotline/">leaflet-2.hotline</a></p>
 	</header>
 	<section>
-		<div id="map"></div>
+		<div class="container">
+			<div class="item">
+				<label>Canvas hotline</label>
+				<div id="map"></div>
+			</div>
+
+			<div class="item">
+				<label>SVG hotline</label>
+				<div id="svgmap"></div>
+
+			</div>
+		</div>
 		<aside>
 			<label>
-				<span>Weight - </span>
-				1 <input id="weight" type="range" min="1" max="16" value="5"/> 16
+				<span>Weight: </span>
+				1 <input id="weight" type="range" min="1" max="16" value="5" /> 16
 			</label>
-			<br/>
+			<br />
 			<label>
-				<span>Outline width - </span>
-				0 <input id="outlineWidth" type="range" min="0" max="8" value="1"/> 8
-			</label>
-			<label>
-				<span>Outline color</span>
-				<input id="outlineColor" type="color" value="#000000"/>
-			</label>
-			<br/>
-			<label>
-				<span>Min - </span>
-				100 <input id="min" type="range" min="100" max="250" value="150" steps="5"/> 250
+				<span>Outline width: </span>
+				0 <input id="outlineWidth" type="range" min="0" max="8" value="1" /> 8
 			</label>
 			<label>
-				<span>Max - </span>
-				250 <input id="max" type="range" min="250" max="500" value="350" steps="5"/> 500
+				<span>Outline color:</span>
+				<input id="outlineColor" type="color" value="#000000" />
 			</label>
-			<p class="muted">The range of the z values is around 150 to 350. All values below the minimum get displayed in the start color of the palette, all values above 350 get displayed in the end color of the palette. All values in between get displayed in the color of the gradient (as defined by the palette) picked at their relative position.</p>
+			<br />
 			<label>
-				<span>Palette color 1</span>
-				<input id="paletteColor1" type="color" value="#008800"/>
-			</label>
-			<label>
-				<span>Palette color 2</span>
-				<input id="paletteColor2" type="color" value="#ffff00"/>
+				<span>Min: </span>
+				100 <input id="min" type="range" min="100" max="250" value="150" step="5" /> 250
 			</label>
 			<label>
-				<span>Palette color 3</span>
-				<input id="paletteColor3" type="color" value="#ff0000"/>
+				<span>Max: </span>
+				250 <input id="max" type="range" min="250" max="500" value="350" step="5" /> 500
+			</label>
+			<p class="muted">The altitude (z) values in the data range from ~150 to ~350.</p>
+			<label>
+				<span>Palette color 1:</span>
+				<input id="paletteColor1" type="color" value="#008800" />
 			</label>
 			<label>
-				<span>Smooth factor - </span>
-				0 <input type="range" id="smoothFactor" value="1" min="0" max="10" /> 10
+				<span>Palette color 2:</span>
+				<input id="paletteColor2" type="color" value="#ffff00" />
+			</label>
+			<label>
+				<span>Palette color 3:</span>
+				<input id="paletteColor3" type="color" value="#ff0000" />
 			</label>
 		</aside>
 	</section>
-	<script>
-		var tiles = L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-		});
-		var map = L.map('map', {
-			layers: [tiles],
-			scrollWheelZoom: false,
-			dragging: false,
-			tap: false
-		});
-		var hotlineLayer = L.hotline(coords, {
+
+	<script type="importmap">
+        {
+            "imports": {
+                "leaflet": "https://unpkg.com/leaflet@2.0.0-alpha/dist/leaflet.js",
+                "leaflet-hotline": "../dist/leaflet-2.hotline.js",
+                "leaflet-hotline-dual": "../dist/leaflet-2.hotline-dual.js"
+            }
+        }
+    </script>
+	<script type="module">
+		import { Map, TileLayer, LatLng } from 'leaflet';
+		//import { hotline } from 'leaflet-hotline';
+		import { hotline } from 'leaflet-hotline-dual';
+
+		const map = new Map('map');
+		const svgmap = new Map('svgmap');
+
+		const tiles = new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map);
+		const svgtiles = new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(svgmap);
+		//tiles.addTo(svgmap);
+
+		const canvasOptions = {
 			min: 150,
-			max: 350,
+			max: 300,
+			weight: 5,
+			rendererType: 'canvas',
+			outlineWidth: 1,
+			outlineColor: '#000000',
 			palette: {
 				0.0: '#008800',
 				0.5: '#ffff00',
 				1.0: '#ff0000'
-			},
+			}
+		};
+
+		const svgOptions = {
+			min: 150,
+			max: 300,
 			weight: 5,
+			outlineWidth: 1,
 			outlineColor: '#000000',
-			outlineWidth: 1
-		});
-		var bounds = hotlineLayer.getBounds();
+			palette: {
+				0.0: '#008800',
+				0.5: '#ffff00',
+				1.0: '#ff0000'
+			}
+		};
 
-		map.fitBounds(bounds);
-		hotlineLayer.bindPopup('Thanks for clicking.<br/>Play with me!').addTo(map);
+		const latLngs = coords.map(p => new LatLng(p[0], p[1], p[2]));
+		const hotlineLayer = hotline(latLngs, canvasOptions);
+		const hotlineSvgLayer = hotline(latLngs, svgOptions);
+		map.addLayer(hotlineLayer);
+		map.fitBounds(hotlineLayer.getBounds());
+		svgmap.addLayer(hotlineSvgLayer);
+		svgmap.fitBounds(hotlineSvgLayer.getBounds());
 
 
-		['weight', 'outlineWidth', 'min', 'max', 'smoothFactor'].forEach(function (value) {
-			document.getElementById(value).addEventListener('input', function () {
-				var style = {};
-				style[value] = parseInt(this.value, 10);
-				hotlineLayer.setStyle(style).redraw();
-			});
-		});
 
-		document.getElementById('outlineColor').addEventListener('input', function () {
-			hotlineLayer.setStyle({ 'outlineColor': this.value }).redraw();
-		});
+		// --- 3. Connect UI Controls to the Hotline ---
+		const inputs = {
+			weight: document.getElementById('weight'),
+			outlineWidth: document.getElementById('outlineWidth'),
+			outlineColor: document.getElementById('outlineColor'),
+			min: document.getElementById('min'),
+			max: document.getElementById('max'),
+			paletteColor1: document.getElementById('paletteColor1'),
+			paletteColor2: document.getElementById('paletteColor2'),
+			paletteColor3: document.getElementById('paletteColor3')
+		};
 
-		var paletteColor1 = document.getElementById('paletteColor1');
-		var paletteColor2 = document.getElementById('paletteColor2');
-		var paletteColor3 = document.getElementById('paletteColor3');
-		[paletteColor1, paletteColor2, paletteColor3].forEach(function (element) {
-			element.addEventListener('input', updatePalette);
-		});
-		function updatePalette() {
-			hotlineLayer.setStyle({
-				'palette': {
-					0.0: paletteColor1.value,
-					0.5: paletteColor2.value,
-					1.0: paletteColor3.value
+		function updateHotlineStyle() {
+			const newStyle = {
+				weight: parseFloat(inputs.weight.value),
+				outlineWidth: parseFloat(inputs.outlineWidth.value),
+				outlineColor: inputs.outlineColor.value,
+				min: parseFloat(inputs.min.value),
+				max: parseFloat(inputs.max.value),
+				palette: {
+					0.0: inputs.paletteColor1.value,
+					0.5: inputs.paletteColor2.value,
+					1.0: inputs.paletteColor3.value
 				}
-			}).redraw();
+			};
+			hotlineLayer.setStyle(newStyle);
+			hotlineSvgLayer.setStyle(newStyle);
 		}
 
+		for (const key in inputs) {
+			inputs[key].addEventListener('input', updateHotlineStyle);
+		}
 	</script>
+
 </body>
+
 </html>

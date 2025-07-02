@@ -1,25 +1,29 @@
 {
-  "name": "leaflet-hotline",
-  "version": "0.4.0",
-  "description": "A Leaflet plugin for drawing colored gradients along a polyline",
-  "main": "src/leaflet.hotline.js",
+  "name": "leaflet-2-hotline",
+  "version": "1.0.0",
+  "description": "A Leaflet plugin for drawing colored gradients along a polyline. Canvas renderer or library with SVG and Canvas render",
+  "main": "dist/leaflet-2.hotline.js",
+  "type": "module",
   "scripts": {
     "test": "npm run lint",
-    "lint": "eslint src/leaflet.hotline.js",
+    "lint": "eslint \"src/**/*.js\" --fix",
     "clean": "rm -rf dist",
-    "beautify": "uglifyjs src/leaflet.hotline.js -b --comments /iosphere/ > dist/leaflet.hotline.js",
-    "minify": "uglifyjs src/leaflet.hotline.js -c -m --comments /iosphere/ > dist/leaflet.hotline.min.js",
+    "copy": "shx cp src/* dist",
+    "minify": "uglifyjs-folder src -e -o dist",
     "prebuild": "npm run clean && mkdir -p dist",
-    "build": "npm run test && npm run beautify && npm run minify"
+    "build": "npm run test && npm run copy && npm run minify",
+    "dev": "npm-run-all --print-label --parallel serve",
+    "serve": "http-server"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/iosphere/Leaflet.hotline.git"
+    "url": "https://github.com/marvbike/leaflet-2.0-hotline.git"
   },
   "keywords": [
     "Leaflet",
     "plugin",
     "canvas",
+    "svg",
     "visualization",
     "path",
     "gradient",
@@ -27,14 +31,25 @@
     "color",
     "colour"
   ],
-  "author": "Jonas Coch",
+  "author": "Marvin Horst",
+  "contributors": [
+    {
+      "name": "Jonas Coch",
+      "url": "https://github.com/iosphere/Leaflet.hotline/"
+    }
+  ],
   "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/iosphere/Leaflet.hotline/issues"
-  },
-  "homepage": "https://iosphere.github.io/Leaflet.hotline/demo/",
+  "homepage": "https://github.com/marvbike/leaflet-2.0-hotline",
   "devDependencies": {
-    "eslint": "^0.23.0",
-    "uglify-js": "^2.4.23"
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
+    "http-server": "^14.1.1",
+    "npm-run-all": "^4.1.5",
+    "shx": "^0.4.0",
+    "uglify-js": "^3.19.3",
+    "uglifyjs-folder": "^3.3.0"
+  },
+  "peerDependencies": {
+    "leaflet": "2.0.0-alpha"
   }
 }
