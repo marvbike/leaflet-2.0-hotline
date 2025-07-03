@@ -5,15 +5,15 @@
  * https://github.com/iosphere/Leaflet.hotline/
  */
 
-import {SVG, Canvas, Polyline, LatLng, LineUtil, Browser} from 'leaflet';
+import { SVG, Canvas, Polyline, LatLng, LineUtil } from 'leaflet';
 
 // A utility class to manage the color palette, used by both renderers.
 class Palette {
-    constructor () {
-        this.palette({0.0: 'green', 0.5: 'yellow', 1.0: 'red'});
+    constructor() {
+        this.palette({ 0.0: 'green', 0.5: 'yellow', 1.0: 'red' });
     }
 
-    palette (palette) {
+    palette(palette) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, 0, 256);
@@ -28,7 +28,7 @@ class Palette {
         return this;
     }
 
-    getRGBForValue (value, min, max) {
+    getRGBForValue(value, min, max) {
         const valueRelative = Math.min(Math.max((value - min) / (max - min), 0), 0.999);
         const paletteIndex = Math.floor(valueRelative * 256) * 4;
         return [this._palette[paletteIndex], this._palette[paletteIndex + 1], this._palette[paletteIndex + 2]];
@@ -38,7 +38,7 @@ class Palette {
 // A stateful utility object for clipping, used by the Polyline.
 const HotlineUtil = {
     _lastCode: undefined,
-    clipSegment (a, b, bounds, useLastCode, round) {
+    clipSegment(a, b, bounds, useLastCode, round) {
         let codeA = useLastCode ? this._lastCode : LineUtil._getBitCode(a, bounds);
         let codeB = LineUtil._getBitCode(b, bounds);
         let codeOut, p, newCode;
@@ -59,17 +59,17 @@ const HotlineUtil = {
 // --- Canvas Renderer Implementation ---
 
 class HotlineCanvasRenderer extends Canvas {
-    constructor (options) {
+    constructor(options) {
         super(options);
         this._palette = new Palette();
     }
 
-    _updatePoly (layer) {
+    _updatePoly(layer) {
         if (!this._drawing) { return; }
 
         const parts = layer._parts;
         if (!parts.length) { return; }
-        
+
         const options = layer.options;
         const ctx = this._ctx;
 
@@ -90,7 +90,7 @@ class HotlineCanvasRenderer extends Canvas {
                 }
             }
         }
-        
+
         ctx.lineWidth = options.weight;
         for (const path of parts) {
             for (let j = 1; j < path.length; j++) {
@@ -115,18 +115,18 @@ class HotlineCanvasRenderer extends Canvas {
 // --- SVG Renderer Implementation ---
 
 class HotlineSVGRenderer extends SVG {
-    constructor (options) {
+    constructor(options) {
         super(options);
         this._palette = new Palette();
     }
 
-    _initContainer () {
+    _initContainer() {
         super._initContainer();
         this._hotlineDefs = SVG.create('defs');
         this._container.appendChild(this._hotlineDefs);
     }
 
-    _initPath (layer) {
+    _initPath(layer) {
         const g = layer._path = SVG.create('g');
         if (layer.options.className) {
             g.classList.add(...layer.options.className.split(' '));
@@ -136,22 +136,22 @@ class HotlineSVGRenderer extends SVG {
         }
     }
 
-    _updateStyle () {
+    _updateStyle() {
         // Do nothing. Styles are applied to individual segments in _updatePoly.
     }
-    
-    _updatePoly (layer) {
+
+    _updatePoly(layer) {
         if (!this._container) { return; }
         this._hotlineDefs.innerHTML = '';
         const group = layer._path;
-        group.innerHTML = ''; 
+        group.innerHTML = '';
 
         const parts = layer._parts;
         if (!parts.length) { return; }
 
         const options = layer.options;
         this._palette.palette(options.palette);
-        
+
         const outlineGroup = SVG.create('g');
         const hotlineGroup = SVG.create('g');
 
@@ -216,26 +216,26 @@ const hotlineRenderer = (options) => {
 };
 
 export class HotlinePolyline extends Polyline {
-    constructor (latlngs, options) {
+    constructor(latlngs, options) {
         super(latlngs, options);
     }
 
-    beforeAdd (map) {
+    beforeAdd(map) {
         this.options.renderer = hotlineRenderer(this.options);
         super.beforeAdd(map);
     }
-    
-    onAdd (map) {
+
+    onAdd(map) {
         super.onAdd(map);
         this._map.on('zoom', this._reset, this);
     }
 
-    onRemove (map) {
+    onRemove(map) {
         this._map.off('zoom', this._reset, this);
         super.onRemove(map);
     }
 
-    _projectLatlngs (latlngs, result, projectedBounds) {
+    _projectLatlngs(latlngs, result, projectedBounds) {
         const flat = latlngs[0] instanceof LatLng;
         if (flat) {
             const ring = [];
@@ -252,7 +252,7 @@ export class HotlinePolyline extends Polyline {
         }
     }
 
-    _clipPoints () {
+    _clipPoints() {
         if (this.options.noClip) {
             this._parts = this._rings;
             return;
@@ -278,7 +278,7 @@ export class HotlinePolyline extends Polyline {
 
     // *** THE FIX ***
     // This custom setStyle method ensures a redraw is triggered for both renderers.
-    setStyle (style) {
+    setStyle(style) {
         Object.assign(this.options, style);
         // The redraw() method is inherited from L.Path and correctly
         // triggers the renderer's update cycle.
@@ -286,7 +286,7 @@ export class HotlinePolyline extends Polyline {
     }
 }
 
-export function hotline (latlngs, options) {
+export function hotline(latlngs, options) {
     return new HotlinePolyline(latlngs, options);
 }
 
